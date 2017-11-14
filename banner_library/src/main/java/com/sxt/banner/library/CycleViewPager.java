@@ -102,6 +102,8 @@ public class CycleViewPager extends FrameLayout {
             viewPager.setAdapter(adapter);
             checkPoint(currentItem);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                int currentIndex = 0;
+
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -109,7 +111,8 @@ public class CycleViewPager extends FrameLayout {
 
                 @Override
                 public void onPageSelected(int position) {
-                    currentItem = position;
+                    currentIndex = position;
+                    currentItem = currentIndex;
                     if (onPageSelectedListener != null) {
                         int fixPosition;
                         if (position == 0) {
@@ -127,12 +130,12 @@ public class CycleViewPager extends FrameLayout {
                 @Override
                 public void onPageScrollStateChanged(int state) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
-                        if (currentItem == 0) {
-                            currentItem = adapter.getCount() - 2;
-                        } else if (currentItem == adapter.getCount() - 1) {
-                            currentItem = 1;
+                        if (currentIndex == 0) {
+                            currentIndex = adapter.getCount() - 2;
+                        } else if (currentIndex == adapter.getCount() - 1) {
+                            currentIndex = 1;
                         }
-                        viewPager.setCurrentItem(currentItem, false);
+                        viewPager.setCurrentItem(currentIndex, false);
                     }
                 }
             });
@@ -191,6 +194,10 @@ public class CycleViewPager extends FrameLayout {
     public CycleViewPager checkPoint(int position) {
         if (viewPager == null || viewPager.getAdapter() == null || viewPager.getAdapter().getCount() == 0)
             return this;
+        if (position < 0) position = 0;
+        if (position >= viewPager.getAdapter().getCount() - 2)
+            position = viewPager.getAdapter().getCount() - 3;
+
         pointContainer.removeAllViews();
         for (int i = 0; i < adapter.getCount() - 2; i++) {
             ImageView img = new ImageView(getContext());
