@@ -199,6 +199,7 @@ public class CycleViewPager extends FrameLayout {
             } else {
                 img.setImageResource(unCheckedRes);
             }
+
             pointContainer.addView(img);
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) img.getLayoutParams();
             lp.leftMargin = marginLeft;
