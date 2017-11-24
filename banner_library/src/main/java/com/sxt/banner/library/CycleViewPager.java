@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.sxt.banner.library.adapter.BaseCyclePagerAdapter;
+
 
 /**
  * Created by dell1 on 2017/9/3.
@@ -22,12 +24,12 @@ import android.widget.LinearLayout;
 public class CycleViewPager extends FrameLayout {
 
     private ViewPager viewPager;
-    private BaseCycleViewPagerAdapter adapter;
+    private BaseCyclePagerAdapter adapter;
     private LinearLayout pointContainer;
     private int checkedRes;
     private int unCheckedRes;
     private int currentItem = 0;
-    private int marginLeft = 8;
+    private int marginLeft = 10;
     private final int STOP_SCROLL = 0;
     private final int START_SCROLL = 1;
     private long duration = 3000;
@@ -74,6 +76,8 @@ public class CycleViewPager extends FrameLayout {
         //添加viewpager
         viewPager = new ViewPager(getContext());
         viewPager.setOverScrollMode(SCROLL_AXIS_NONE);
+        viewPager.setFocusable(false);
+        viewPager.setEnabled(false);
         addView(viewPager);
         LayoutParams lp0 = (LayoutParams) viewPager.getLayoutParams();
         lp0.gravity = Gravity.CENTER;
@@ -96,11 +100,11 @@ public class CycleViewPager extends FrameLayout {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public CycleViewPager setAdapter(final BaseCycleViewPagerAdapter adapter) {
+    public CycleViewPager setAdapter(final BaseCyclePagerAdapter adapter) {
         if (viewPager != null && adapter != null) {
             this.adapter = adapter;
             viewPager.setAdapter(adapter);
-            checkPoint(currentItem);
+            updatePoint(currentItem);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 int currentIndex = 0;
 
@@ -116,13 +120,13 @@ public class CycleViewPager extends FrameLayout {
                     if (onPageSelectedListener != null) {
                         int fixPosition;
                         if (position == 0) {
-                            fixPosition = adapter.datas.size() - 1;
+                            fixPosition = adapter.getCount() - 2;
                         } else if (position == adapter.getCount() - 1) {
-                            fixPosition = 0;
+                            fixPosition = 1;
                         } else {
-                            fixPosition = position - 1;
+                            fixPosition = --position;
                         }
-                        checkPoint(fixPosition);
+                        updatePoint(position);
                         onPageSelectedListener.onPageSelected(viewPager, adapter, fixPosition);
                     }
                 }
@@ -130,11 +134,6 @@ public class CycleViewPager extends FrameLayout {
                 @Override
                 public void onPageScrollStateChanged(int state) {
                     if (state == ViewPager.SCROLL_STATE_IDLE) {
-                        if (currentIndex == 0) {
-                            currentIndex = adapter.getCount() - 2;
-                        } else if (currentIndex == adapter.getCount() - 1) {
-                            currentIndex = 1;
-                        }
                         viewPager.setCurrentItem(currentIndex, false);
                     }
                 }
@@ -191,12 +190,11 @@ public class CycleViewPager extends FrameLayout {
         return this;
     }
 
-    public CycleViewPager checkPoint(int position) {
-        if (viewPager == null || viewPager.getAdapter() == null || viewPager.getAdapter().getCount() == 0)
-            return this;
-        if (position < 0) position = 0;
-        if (position >= viewPager.getAdapter().getCount() - 2)
-            position = viewPager.getAdapter().getCount() - 3;
+    public CycleViewPager updatePoint(int position) {
+
+        if (--position < 0) {
+            position = 0;
+        }
 
         pointContainer.removeAllViews();
         for (int i = 0; i < adapter.getCount() - 2; i++) {
@@ -231,11 +229,11 @@ public class CycleViewPager extends FrameLayout {
     }
 
     public interface OnPageSelectedListener {
-        void onPageSelected(ViewPager viewPager, BaseCycleViewPagerAdapter adapter, int position);
+        void onPageSelected(ViewPager viewPager, BaseCyclePagerAdapter adapter, int position);
     }
 
     public void startScroll() {
-        if (isOpenSelfScroll && viewPager != null && viewPager.getAdapter() != null && viewPager.getAdapter().getCount() > 0) {
+        if (isOpenSelfScroll) {
             handler.sendEmptyMessageDelayed(START_SCROLL, duration);
         }
     }

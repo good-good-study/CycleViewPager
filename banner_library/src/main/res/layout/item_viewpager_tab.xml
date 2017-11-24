@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_viewpager_indicator_tab_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/item_viewpager_indicator_tab_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textColor="@color/text_color_3"
+        android:textSize="15dp" />
+
+
+    <com.ginkodrop.izhaohu.view.indicator.MsgView xmlns:mv="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_viewpager_indicator_tab_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/item_viewpager_indicator_tab_title"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textColor="@color/white"
+        android:textSize="10dp"
+        android:visibility="invisible"
+        mv:mv_backgroundColor="@color/red"
+        mv:mv_isRadiusHalfHeight="true"
+        mv:mv_strokeColor="@color/white"
+        mv:mv_strokeWidth="1dp" />
+
+</RelativeLayout>
