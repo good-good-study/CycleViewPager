@@ -36,18 +36,18 @@ public abstract class BaseCyclePagerAdapter<T> extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        int fixPosition;
+        int datePosition;
         if (position == 0) {
-            fixPosition = this.datas.size() - 1;
+            datePosition = this.datas.size() - 1;
         } else if (position == getCount() - 1) {
-            fixPosition = 0;
+            datePosition = 0;
         } else {
-            fixPosition = --position;
+            datePosition = --position;
         }
-        return instantiateItem(container, position, fixPosition);
+        return instantiateItem(container, position, datePosition);
     }
 
-    public Object instantiateItem(ViewGroup container, int position, int fixPosition) {
+    public Object instantiateItem(ViewGroup container, int position, int datePosition) {
         return super.instantiateItem(container, position);
     }
 }

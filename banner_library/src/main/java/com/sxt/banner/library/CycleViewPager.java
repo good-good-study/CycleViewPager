@@ -104,40 +104,9 @@ public class CycleViewPager extends FrameLayout {
         if (viewPager != null && adapter != null) {
             this.adapter = adapter;
             viewPager.setAdapter(adapter);
-            updatePoint(currentItem);
-            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                int currentIndex = 0;
-
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    currentIndex = position;
-                    currentItem = currentIndex;
-                    if (onPageSelectedListener != null) {
-                        int fixPosition;
-                        if (position == 0) {
-                            fixPosition = adapter.getCount() - 2;
-                        } else if (position == adapter.getCount() - 1) {
-                            fixPosition = 1;
-                        } else {
-                            fixPosition = --position;
-                        }
-                        updatePoint(position);
-                        onPageSelectedListener.onPageSelected(viewPager, adapter, fixPosition);
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    if (state == ViewPager.SCROLL_STATE_IDLE) {
-                        viewPager.setCurrentItem(currentIndex, false);
-                    }
-                }
-            });
+            updatePoint(0);
+            viewPager.setCurrentItem(1);
+            viewPager.addOnPageChangeListener(new ViewPagerOnPageChangeListener());
         }
         return this;
     }
@@ -192,10 +161,6 @@ public class CycleViewPager extends FrameLayout {
 
     public CycleViewPager updatePoint(int position) {
 
-        if (--position < 0) {
-            position = 0;
-        }
-
         pointContainer.removeAllViews();
         for (int i = 0; i < adapter.getCount() - 2; i++) {
             ImageView img = new ImageView(getContext());
@@ -224,22 +189,69 @@ public class CycleViewPager extends FrameLayout {
         return this;
     }
 
-    public void addOnPageSelecedListener(OnPageSelectedListener onPageSelectedListener) {
+    public CycleViewPager addOnPageSelecedListener(OnPageSelectedListener onPageSelectedListener) {
         this.onPageSelectedListener = onPageSelectedListener;
+        return this;
     }
 
     public interface OnPageSelectedListener {
-        void onPageSelected(ViewPager viewPager, BaseCyclePagerAdapter adapter, int position);
+        /**
+         * @param viewPager    当前的ViewPager
+         * @param adapter      当前的ViewPager的适配器
+         * @param position     实际滑动后的position
+         * @param fixPosition  修复后的position,仅用于viewPager无限循环
+         * @param datePosition 真实数据的osition & indicator的指示位置
+         */
+        void onPageSelected(ViewPager viewPager, BaseCyclePagerAdapter adapter, int position, int fixPosition, int datePosition);
+    }
+
+    private class ViewPagerOnPageChangeListener implements ViewPager.OnPageChangeListener {
+
+        int fixPosition = -1;
+        int datePosition;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (onPageSelectedListener != null) {
+                if (position == 0) {
+                    fixPosition = adapter.getCount() - 2;
+                    datePosition = adapter.getCount() - 3;
+                } else if (position == adapter.getCount() - 1) {
+                    fixPosition = 1;
+                    datePosition = 0;
+                } else {
+                    fixPosition = position;
+                    datePosition = position - 1;
+                }
+                updatePoint(datePosition);
+                currentItem = fixPosition;
+                onPageSelectedListener.onPageSelected(viewPager, adapter, position, fixPosition, datePosition);
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            if (state == ViewPager.SCROLL_STATE_IDLE && fixPosition != -1) {
+                viewPager.setCurrentItem(fixPosition, false);
+            }
+        }
     }
 
     public void startScroll() {
-        if (isOpenSelfScroll) {
+        if (isOpenSelfScroll && handler != null) {
             handler.sendEmptyMessageDelayed(START_SCROLL, duration);
         }
     }
 
     public void stopScroll() {
-        handler.removeCallbacksAndMessages(null);
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 
     @Override

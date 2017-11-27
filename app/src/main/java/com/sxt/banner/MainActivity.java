@@ -28,20 +28,20 @@ public class MainActivity extends AppCompatActivity {
         CycleViewPager viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(new BaseCyclePagerAdapter(this, urls) {
             @Override
-            public Object instantiateItem(ViewGroup container, int position, int fixPosition) {
+            public Object instantiateItem(ViewGroup container, int position, int datePosition) {
 
                 ImageView img = new ImageView(MainActivity.this);
                 img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                img.setImageResource(urls.get(fixPosition));
+                img.setImageResource(urls.get(datePosition));
                 container.addView(img);
 
                 return img;
             }
         }).addOnPageSelecedListener(new CycleViewPager.OnPageSelectedListener() {
             @Override
-            public void onPageSelected(ViewPager viewPager, BaseCyclePagerAdapter adapter, int position) {
+            public void onPageSelected(ViewPager viewPager, BaseCyclePagerAdapter adapter, int position, int fixPosition, int datePosition) {
                 Log.i("sxt", "position == " + position);
             }
-        });
+        }).setScrollSelfState(true);
     }
 }
