@@ -46,12 +46,10 @@ public class CycleViewPager extends FrameLayout {
                 case START_SCROLL://开始切换
                     currentItem++;
                     viewPager.setCurrentItem(currentItem % adapter.getCount());
-                    if (isOpenSelfScroll) {
-                        sendEmptyMessageDelayed(START_SCROLL, duration);
-                    }
+                    startScroll();
                     break;
                 case STOP_SCROLL://停止切换
-                    removeMessages(START_SCROLL);
+                    stopScroll();
                     break;
             }
         }
@@ -77,7 +75,6 @@ public class CycleViewPager extends FrameLayout {
         viewPager = new ViewPager(getContext());
         viewPager.setOverScrollMode(SCROLL_AXIS_NONE);
         viewPager.setFocusable(false);
-        viewPager.setEnabled(false);
         addView(viewPager);
         LayoutParams lp0 = (LayoutParams) viewPager.getLayoutParams();
         lp0.gravity = Gravity.CENTER;
@@ -115,14 +112,14 @@ public class CycleViewPager extends FrameLayout {
     float moveX = 0;
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getX();
                 break;
             case MotionEvent.ACTION_MOVE:
                 moveX = event.getX();
-                if (isOpenSelfScroll && Math.abs(moveX - downX) > 5) {
+                if (Math.abs(moveX - downX) > 5) {
                     stopScroll();
                 }
                 break;
@@ -134,7 +131,7 @@ public class CycleViewPager extends FrameLayout {
                 moveX = 0;
                 break;
         }
-        return super.onTouchEvent(event);
+        return super.dispatchTouchEvent(event);
     }
 
     public CycleViewPager setPointRes(int checkedRes, int unCheckedRes) {
