@@ -32,7 +32,7 @@ public class CycleViewPager extends FrameLayout {
     private int marginLeft = 10;
     private final int STOP_SCROLL = 0;
     private final int START_SCROLL = 1;
-    private long duration = 3000;
+    private long duration = 5000;
     private OnPageSelectedListener onPageSelectedListener;
     private boolean isOpenSelfScroll = false;
 
@@ -237,6 +237,10 @@ public class CycleViewPager extends FrameLayout {
                 viewPager.setCurrentItem(fixPosition, false);
             }
         }
+    }
+
+    public ViewPager getViewPager() {
+        return this.viewPager;
     }
 
     public void startScroll() {
